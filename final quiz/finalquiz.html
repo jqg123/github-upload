@@ -69,7 +69,7 @@ var json = `{
         }
     }
 }`;
-var getJSON = function(url, callback) {
+/*var getJSON = function(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open('get', url, true);
     xhr.responseType = 'json';
@@ -94,13 +94,14 @@ var getJSON = function(url, callback) {
 
 
 var x='https://mm214.com/menu.php'
+*/
 
-getJSON(x, function(err, data) {
+/*getJSON(x, function(err, data) {
   if (err != null) {
     //alert('Something went wrong: ' + err);
     console.log(err);
   } 
-  else {
+  else {*/
   	var content = '';
   	var contentTwo = '';
   	var contentThree = '';
@@ -147,11 +148,11 @@ getJSON(x, function(err, data) {
   	}
 
                 
-  	console.log(data);
+  	/*console.log(data);
   	console.log(data.menu);
   	console.log(data.menu.drinks);
   	console.log(data.menu.drinks.soda);
-  	console.log(data.menu.drinks.soda.small);
+  	console.log(data.menu.drinks.soda.small);*/
     //lert('Your Json result is:  ' + data.result);
 
     document.getElementById('menu').innerHTML = content;
@@ -160,9 +161,9 @@ getJSON(x, function(err, data) {
     localStorage.setItem('menu',JSON.stringify(menu));
 
 
-  }
+  
   			
-});
+;
 
 function storeOrder(){
 				var cost = 0;
