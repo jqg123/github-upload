@@ -1,0 +1,256 @@
+<style>
+.grid{
+display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0px 0px;
+  margin:0px;
+  float:left;
+  grid-template-areas:
+    ". ."
+
+   ;
+
+}
+.button{
+	grid-area: one;
+	text-align:center;
+}
+#menuThree{
+	margin-top:100px;
+	padding:10px;
+	grid-template-rows: 1fr 1fr;
+}
+@media (max-width: 500px){
+	.grid{  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "."; };
+}
+</style>
+
+<html>
+<head>
+<div class="grid">
+	<p id="menu"></p>
+	
+	<p id="menuThree"></br></p>
+	<p id="menuTwo"></p>
+</div>
+<div class="button">
+	<p><button type="button" id ="submitOrder" onclick=" storeOrder(), retrieveOrder()">Submit Order</button></p>
+	</div>
+<script>
+	
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+
+        callback(status);
+        console.log(status);
+        try {
+        	if (status == 404) throw "Unable to connect to the html";
+        }
+        catch(err) {
+        	document.getElementById('show').innerHTML = (err + ': <a href="https://jsonplaceholder.typicode.com/posts/1">https://jsonplaceholder.typicode.com/posts/1</a>');
+        }
+      }
+    };
+    xhr.send();
+};
+
+
+var x='https://mm214.com/menu.php'
+
+getJSON(x, function(err, data) {
+  if (err != null) {
+    //alert('Something went wrong: ' + err);
+    console.log(err);
+  } 
+  else {
+  	var content = '';
+  	var contentTwo = '';
+  	var contentThree = '';
+  	var menu = data.menu;
+  	for (i in menu){
+  		if (typeof(menu[i]) == 'object'){
+  			//content += '<h2>' + i +'</h2>';
+  			if (i=='sides'){
+  			contentTwo += '<h2>' + i +'</h2>'
+  			contentTwo += '<img src="sides.jpg" alt="sides" width="400"><br><br>';
+  			}
+  			else if (i=='drinks'){
+  			content += '<h2>' + i +'</h2>'	
+  			content += '<img src="drinks.jpg" alt="drinks" width="400"><br><br>';
+  			}
+  			else if (i=='toppings'){
+  			contentThree += '<h2>' + i +'</h2>'
+  			contentTwo += '<img src="toppings.jpg" alt="toppings" width="400"><br><br>';
+  			}
+  			for (j in menu[i]) {
+  				if (typeof(menu[i][j]) == 'object'){
+  					
+  					for (k in menu[i][j]) {
+  						content += k +' '+ j + ': $' + menu[i][j][k] + '<input type="number" id ="qty_' + k + '" min = 0 max = 10><br>';
+  					}
+  				}
+  				else {
+  				if (i=='toppings'){
+
+  				contentThree += j + ' ' + i + ': $' + menu[i][j] + '<input type="number" id = "qty_' + j + '" min = 0 max = 10><br>';
+  				}
+  				else {
+  				contentTwo +=  j + ' ' + i + ': $' + menu[i][j] + '<input type="number" id = "qty_' + j + '" min = 0 max = 10><br>';
+  			}
+  			}
+  			}//close y
+  		}
+  		else
+  		{
+  			content += '<h2>  pizza </h2>';
+  			content += '<img src="slice.jpg" alt="slice of pizza" width=400><br><br>'
+  			content += i + ': $' + menu[i] + '<input type="number" id = "qty_' + i + '" min = 0 max = 10><br>';
+  		}// for if menu[i] is not an object
+  	}
+
+                
+  	console.log(data);
+  	console.log(data.menu);
+  	console.log(data.menu.drinks);
+  	console.log(data.menu.drinks.soda);
+  	console.log(data.menu.drinks.soda.small);
+    //lert('Your Json result is:  ' + data.result);
+
+    document.getElementById('menu').innerHTML = content;
+    document.getElementById('menuTwo').innerHTML = contentTwo;
+    document.getElementById('menuThree').innerHTML = contentThree;
+    localStorage.setItem('menu',JSON.stringify(menu));
+
+
+  }
+  			
+});
+
+function storeOrder(){
+				var cost = 0;
+ 				var menu = JSON.parse(localStorage.getItem('menu'));
+ 				console.log(menu);
+ 				for (x in menu){
+ 					if (typeof(menu[x]) == 'object'){
+ 						for (y in menu[x]){
+ 							if (typeof(menu[x][y]) == 'object'){
+ 								for (z in menu[x][y]){
+ 									console.log(menu[x][y][z]);
+ 									console.log(z);
+ 									cost += menu[x][y][z]*document.getElementById('qty_'+z).value;
+ 									console.log(cost);
+ 								}
+ 							}
+ 							else {
+ 								console.log(menu[x][y]);
+ 								console.log(y);
+ 								cost += menu[x][y]*document.getElementById('qty_'+y).value;
+ 								
+ 								console.log(cost);
+ 							}
+ 						}
+ 					
+
+ 					}
+ 					else{
+ 					console.log(document.getElementById('qty_'+x).value);	
+ 					console.log(menu[x]);
+ 					console.log(x);
+ 					cost += menu[x]*document.getElementById('qty_'+x).value;
+ 					console.log(cost);
+ 				}
+ 				}
+
+
+ 				var order = new Array;
+ 				
+
+               var pizzaqty = '<h2>Pizza</h2>Pizza Slice(s):' + document.getElementById('qty_slice of pizza').value;
+               order.push(pizzaqty);
+
+               var pepperoniqty ='<h2>Toppings:</h2>Pepperoni:' + document.getElementById('qty_pepperoni').value;
+               order.push(pepperoniqty);
+
+               var meatballsqty = '<br>Meatballs:' + document.getElementById('qty_meatballs').value;
+               order.push(meatballsqty);
+
+               var mushroomsqty = '<br>Mushroooms:' + document.getElementById('qty_mushrooms').value;
+               order.push(mushroomsqty);
+
+               var olivesqty = '<br>Olives:' + document.getElementById('qty_olives').value;
+               order.push(olivesqty);
+
+               var potatoqty = '<h2>Sides:</h2>Potato Salad:' + document.getElementById('qty_potato salad').value;
+               order.push(potatoqty);
+
+               var hummusqty = '<br>Hummus:' + document.getElementById('qty_hummus').value;
+               order.push(hummusqty);
+
+               var caesarqty = '<br>Caesar Salad:' + document.getElementById('qty_caesar salad').value;
+ 
+               order.push(caesarqty);
+
+                var gardenqty = '<br>Garden Salad:' + document.getElementById('qty_garden salad').value;
+               order.push(caesarqty);
+
+                var smallqty = '<h2>Drinks:</h2>Small Soda:' + document.getElementById('qty_small').value;
+               order.push(smallqty);
+
+               var mediumqty = '<br>Medium Soda:' + document.getElementById('qty_medium').value;
+               order.push(mediumqty);
+
+               var largeqty = '<br>Large Soda:' + document.getElementById('qty_large').value;
+               order.push(largeqty);
+
+               var juiceqty = '<br>Juice:' + document.getElementById('qty_juice').value;
+               order.push(juiceqty);
+
+               var waterqty = '<br>Water:' + document.getElementById('qty_water').value;
+               order.push(waterqty);
+
+
+
+               cost = cost.toFixed(2);
+               localStorage.setItem('order',order);
+               localStorage.setItem('cost',cost);
+               console.log(order);
+
+              }
+              
+              function retrieveOrder(){
+                
+                var order = localStorage.getItem('order');
+                var cost = localStorage.getItem('cost')
+                  document.getElementById('pizza').innerHTML = order;
+                  document.getElementById('money').innerHTML = '<h2>Total</h2>Total Cost: $' +cost;
+                 
+
+              }
+
+
+</script>
+</head>
+<body>
+	
+	<div class="output">
+	<p id="pizza">
+		
+	</p>
+	<p id="money">
+
+	</p>	
+</div>
+</body>
